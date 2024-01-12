@@ -6,6 +6,8 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE "DEBUG")
 endif()
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # setup external libraries
 add_subdirectory(external/glfw)
 add_subdirectory(external/glm)

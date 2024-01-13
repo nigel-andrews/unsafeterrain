@@ -360,12 +360,16 @@ int main(int argc, char** argv)
             process_inputs(window, scene->camera());
         }
 
+        glEnable(GL_CULL_FACE);
+        glCullFace(GL_BACK);
+        glFrontFace(GL_CCW);
         // Render the scene
         {
             renderer.main_framebuffer.bind();
             scene->render();
         }
 
+        glDisable(GL_CULL_FACE);
         // Apply a tonemap in compute shader
         {
             renderer.tone_map_framebuffer.bind();
@@ -378,7 +382,6 @@ int main(int argc, char** argv)
         // Blit tonemap result to screen
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
         renderer.tone_map_framebuffer.blit();
-
         gui(imgui);
 
         glfwSwapBuffers(window);

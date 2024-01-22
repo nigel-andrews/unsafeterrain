@@ -280,6 +280,11 @@ namespace OM3D
             : it->location;
     }
 
+    GLint Program::find_attrib(char* name) const
+    {
+        glGetAttribLocation(_handle.get(), name);
+    }
+
     void Program::set_uniform(u32 name_hash, u32 value)
     {
         if (const int loc = find_location(name_hash); loc >= 0)

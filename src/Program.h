@@ -1,6 +1,7 @@
 #ifndef PROGRAM_H
 #define PROGRAM_H
 
+#include <glad/glad.h>
 #include <glm/mat2x2.hpp>
 #include <glm/mat3x3.hpp>
 #include <glm/mat4x4.hpp>
@@ -60,6 +61,8 @@ namespace OM3D
         void set_uniform(u32 name_hash, const glm::mat2& value);
         void set_uniform(u32 name_hash, const glm::mat3& value);
         void set_uniform(u32 name_hash, const glm::mat4& value);
+
+        GLint find_attrib(char* name) const;
 
         template <typename T>
         void set_uniform(std::string_view name, const T& value)

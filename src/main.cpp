@@ -1,3 +1,4 @@
+#include <array>
 #include <cstdlib>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -17,6 +18,7 @@
 #include <vector>
 
 #include "QTree.h"
+// #include "Terrain.h"
 
 using namespace OM3D;
 
@@ -310,10 +312,27 @@ int main(int argc, char** argv)
 {
     auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
     qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
+    qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 0.)));
+
+    qt = std::move(QTree<5>::add_node(qt, glm::vec2(49, 0.)));
 
     std::cout << *qt << std::endl;
 
     std::exit(0);
+
+    // Terrain<5> terrain{};
+    // std::array<GLfloat, 5 * 5> data{};
+    // data.fill(5.);
+    // terrain.add(Chunk<5>{
+    //     .id = 0,
+    //     .origin = glm::vec2(0., 0.),
+    //     .data = data,
+    // });
+    //
+    // terrain.fetch(glm::vec2(1., 1.));
+    //
+    // std::exit(0);
+    //
     DEBUG_ASSERT([] {
         std::cout << "Debug asserts enabled" << std::endl;
         return true;
@@ -342,6 +361,7 @@ int main(int argc, char** argv)
     scene = create_default_scene();
 
     auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
+    auto generator_program = Program::from_file("generate.comp");
     RendererState renderer;
 
     for (;;)

@@ -46,7 +46,8 @@ target_compile_options(
           $<$<CONFIG:RELEASE>:-O3>
           $<$<CONFIG:DEBUG>:-g>
           $<$<CONFIG:DEBUG>:-O0>
-          $<$<CONFIG:DEBUG>:-fno-inline>)
+          $<$<CONFIG:DEBUG>:-fno-inline>
+          $<$<CONFIG:DEBUG>:-fsanitize=address>)
 
 set_target_properties(main PROPERTIES CXX_EXTENSIONS OFF CXX_STANDARD 20)
-target_link_libraries(main PRIVATE glfw)
+target_link_libraries(main PRIVATE glfw asan)

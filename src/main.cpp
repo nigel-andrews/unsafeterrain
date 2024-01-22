@@ -1,4 +1,8 @@
+#include <cstdlib>
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <memory>
+#include <utility>
 
 #define GLFW_INCLUDE_NONE
 #include <Framebuffer.h>
@@ -11,6 +15,8 @@
 #include <imgui/imgui.h>
 #include <iostream>
 #include <vector>
+
+#include "QTree.h"
 
 using namespace OM3D;
 
@@ -302,6 +308,12 @@ struct RendererState
 
 int main(int argc, char** argv)
 {
+    auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
+    qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
+
+    std::cout << *qt << std::endl;
+
+    std::exit(0);
     DEBUG_ASSERT([] {
         std::cout << "Debug asserts enabled" << std::endl;
         return true;

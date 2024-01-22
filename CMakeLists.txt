@@ -40,7 +40,7 @@ target_compile_options(
   main
   PRIVATE "-Wall"
           "-Wextra"
-          "-std=c++20"
+          "-std=c++23"
           "-pedantic"
           $<$<CONFIG:RELEASE>:-Werror>
           $<$<CONFIG:RELEASE>:-O3>

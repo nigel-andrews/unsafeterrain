@@ -19,30 +19,16 @@ glm::vec2 QTree<CHUNK_SIZE>::compute_parent_pos(enum direction dir)
         return glm::vec2(pos.x - CHUNK_SIZE, pos.y - CHUNK_SIZE);
     case direction::bottom_right:
         return glm::vec2(pos.x + CHUNK_SIZE, pos.y - CHUNK_SIZE);
-    default:
-        break;
     }
-
-    return glm::vec2();
 }
 
 template <std::size_t CHUNK_SIZE>
-QTree<CHUNK_SIZE>::QTree(std::unique_ptr<QTree> tree, enum direction dir)
-    : height_(0)
-    , pos_(tree->pos_)
-    , chunk_id_(0)
-    , top_left_(dir == direction::bottom_right ? std::move(tree) : nullptr)
-    , top_right_(dir == direction::bottom_left ? std::move(tree) : nullptr)
-    , bottom_left_(dir == direction::top_right ? std::move(tree) : nullptr)
-    , bottom_right_(dir == direction::top_left ? std::move(tree) : nullptr)
-{}
-
-template <std::size_t CHUNK_SIZE>
-auto add_node(std::unique_ptr<QTree<CHUNK_SIZE>>& root, const glm::vec2& pos,
-              std::size_t) -> std::unique_ptr<QTree<CHUNK_SIZE>>&
+auto QTree<CHUNK_SIZE>::add_node(std::unique_ptr<QTree<CHUNK_SIZE>>& root,
+                                 const glm::vec2& pos)
+    -> std::unique_ptr<QTree<CHUNK_SIZE>>&&
 {
     if (!root)
-        return;
+        return std::move(root);
 
     auto& node = root;
     std::optional<enum direction> dir = std::nullopt;
@@ -53,8 +39,7 @@ auto add_node(std::unique_ptr<QTree<CHUNK_SIZE>>& root, const glm::vec2& pos,
             std::make_unique<QTree<CHUNK_SIZE>>(std::move(node), dir.value());
     }
 
-    // TODO: Check if move required
-    return node;
+    return std::move(node);
 }
 
 template <std::size_t CHUNK_SIZE>
@@ -86,4 +71,26 @@ auto QTree<CHUNK_SIZE>::is_in_bounds(const glm::vec2& pos)
         else
             return std::nullopt;
     }
+}
+
+template <size_t CHUNK_SIZE>
+std::ostream& operator<<(std::ostream& os, QTree<CHUNK_SIZE> const& qt)
+{
+    os << "QTree {\n" //
+       << "\tpos_: " << qt.pos_ << "\n"
+       << "\theight_: " << qt.height_ << "\n"
+       << "\tchunk_id_: " << qt.chunk_id_ << "\n";
+
+    if (qt.top_left_)
+        os << "\ttop_left_: " << qt.top_left_ << "\n";
+    if (qt.top_right_)
+        os << "\ttop_right_: " << qt.top_right_ << "\n";
+    if (qt.bottom_left_)
+        os << "\tbottom_left_: " << qt.bottom_left_ << "\n";
+    if (qt.bottom_right_)
+        os << "\tbottom_right_: " << qt.bottom_right_ << "\n";
+
+    os << "}";
+
+    return os;
 }

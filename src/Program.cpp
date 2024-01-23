@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <glad/glad.h>
+#include <iostream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -29,7 +30,15 @@ namespace OM3D
             std::string defs = "\n";
             for (const std::string& def : defines)
             {
-                defs += "#define " + def + " 1\n";
+                auto space = def.find_last_of(' ');
+                auto name = def.substr(0, space);
+                std::string value;
+                if (space != std::string::npos)
+                    value = def.substr(space + 1);
+                if (value.find_first_not_of(' ') == std::string::npos)
+                    value = "1";
+
+                defs += "#define " + name + ' ' + value;
             }
             return defs;
         };
@@ -280,9 +289,9 @@ namespace OM3D
             : it->location;
     }
 
-    GLint Program::find_attrib(char* name) const
+    GLint Program::find_attrib(const char* attrib_name) const
     {
-        glGetAttribLocation(_handle.get(), name);
+        return glGetAttribLocation(_handle.get(), attrib_name);
     }
 
     void Program::set_uniform(u32 name_hash, u32 value)
@@ -298,6 +307,14 @@ namespace OM3D
         if (const int loc = find_location(name_hash); loc >= 0)
         {
             glProgramUniform1f(_handle.get(), loc, value);
+        }
+    }
+
+    void Program::set_uniform(u32 name_hash, glm::ivec2 value)
+    {
+        if (const int loc = find_location(name_hash); loc >= 0)
+        {
+            glProgramUniform2i(_handle.get(), loc, value.x, value.y);
         }
     }
 

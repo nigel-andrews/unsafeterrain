@@ -55,6 +55,7 @@ namespace OM3D
 
         void set_uniform(u32 name_hash, u32 value);
         void set_uniform(u32 name_hash, float value);
+        void set_uniform(u32 name_hash, glm::ivec2 value);
         void set_uniform(u32 name_hash, glm::vec2 value);
         void set_uniform(u32 name_hash, glm::vec3 value);
         void set_uniform(u32 name_hash, glm::vec4 value);
@@ -62,7 +63,7 @@ namespace OM3D
         void set_uniform(u32 name_hash, const glm::mat3& value);
         void set_uniform(u32 name_hash, const glm::mat4& value);
 
-        GLint find_attrib(char* name) const;
+        GLint find_attrib(const char* name) const;
 
         template <typename T>
         void set_uniform(std::string_view name, const T& value)

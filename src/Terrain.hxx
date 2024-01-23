@@ -6,7 +6,7 @@
 
 namespace OM3D
 {
-    template <std::size_t CHUNK_SIZE>
+    template <u32 CHUNK_SIZE>
     auto Terrain<CHUNK_SIZE>::fetch(const glm::vec2& pos) const
         -> const Chunk<CHUNK_SIZE>&
     {
@@ -23,7 +23,7 @@ namespace OM3D
         // }
     }
 
-    template <std::size_t CHUNK_SIZE>
+    template <u32 CHUNK_SIZE>
     inline void Terrain<CHUNK_SIZE>::add(Chunk<CHUNK_SIZE>&& chunk)
     {
         // chunks.emplace_back(chunk);

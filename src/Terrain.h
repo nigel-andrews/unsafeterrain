@@ -14,7 +14,7 @@
 
 namespace OM3D
 {
-    template <std::size_t CHUNK_SIZE>
+    template <u32 CHUNK_SIZE>
     class Terrain : NonCopyable
     {
     public:
@@ -28,7 +28,7 @@ namespace OM3D
         // The hashmap stores the corresponding chunk.
         std::unordered_map<u32, Chunk<CHUNK_SIZE>> chunks_;
         // Contains all the logic related to generating new chunks.
-        ChunkGenerator generator;
+        ChunkGenerator<CHUNK_SIZE> generator;
     };
 } // namespace OM3D
 

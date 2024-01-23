@@ -4,6 +4,7 @@
 #include <array>
 #include <cstdint>
 #include <defines.h>
+#include <iostream>
 #include <string>
 #include <utility>
 
@@ -40,6 +41,16 @@
 #    define OM3D_DEBUG
 #    define DEBUG_ASSERT(cond) ALWAYS_ASSERT(cond, "Assert failed: " #cond)
 #endif
+
+#define DOGL(EXPR)                                                             \
+    do                                                                         \
+    {                                                                          \
+        EXPR;                                                                  \
+        GLenum err = glGetError();                                             \
+        if (err != GL_NO_ERROR)                                                \
+            std::cerr << "[OpenGL][ERROR] " << __FILE__ << ':' << __LINE__     \
+                      << ": " << err << std::endl;                             \
+    } while (0)
 
 namespace OM3D
 {

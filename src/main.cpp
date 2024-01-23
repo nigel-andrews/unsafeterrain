@@ -5,6 +5,8 @@
 #include <memory>
 #include <utility>
 
+#include "ChunkGenerator.h"
+
 #define GLFW_INCLUDE_NONE
 #include <Framebuffer.h>
 #include <GLFW/glfw3.h>
@@ -310,15 +312,15 @@ struct RendererState
 
 int main(int argc, char** argv)
 {
-    auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
-    qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
-    qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 0.)));
-
-    qt = std::move(QTree<5>::add_node(qt, glm::vec2(49, 0.)));
-
-    std::cout << *qt << std::endl;
-
-    std::exit(0);
+    // auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 0.)));
+    //
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(49, 0.)));
+    //
+    // std::cout << *qt << std::endl;
+    //
+    // std::exit(0);
 
     // Terrain<5> terrain{};
     // std::array<GLfloat, 5 * 5> data{};
@@ -355,6 +357,11 @@ int main(int argc, char** argv)
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
     init_graphics();
+
+    ChunkGenerator<32> gen{};
+    gen.generate({ 0, 0 });
+
+    std::exit(1);
 
     ImGuiRenderer imgui(window);
 

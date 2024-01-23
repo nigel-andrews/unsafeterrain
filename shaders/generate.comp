@@ -9,13 +9,12 @@ layout (std430, binding = 0) buffer point_pos_buffer {
 };
 
 layout (location = 0) uniform uint buffer_width;
-layout (location = 1) uniform float detail;
-layout (location = 2) uniform vec2 offset;
+layout (location = 1) uniform ivec2 offset;
 
 void main() {
   uint index = gl_GlobalInvocationID.x;
   if (index != 0)
     index++;
 
-  height[index] = snoise(offset + vec2(index % buffer_width, index / buffer_width));
+  height[index] = snoise(vec2(offset) + vec2(index % buffer_width, index / buffer_width));
 }

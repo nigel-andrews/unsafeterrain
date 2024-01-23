@@ -309,6 +309,23 @@ struct RendererState
     Framebuffer tone_map_framebuffer;
 };
 
+struct dummy_string
+{
+    std::string str;
+    std::size_t key;
+
+    dummy_string(const char* str)
+        : str(std::move(str))
+        , key(std::stoi(str))
+    {}
+
+    friend std::ostream& operator<<(std::ostream& os, const dummy_string& str)
+    {
+        os << str.str;
+        return os;
+    }
+};
+
 int main(int argc, char** argv)
 {
     // auto qt = std::make_unique<QTree<64>>(glm::vec2(0., 0.), 0);
@@ -319,6 +336,37 @@ int main(int argc, char** argv)
     // // qt = std::move(QTree<64>::add_node(qt, glm::vec2(49, 0.)));
     //
     // std::cout << *qt << std::endl;
+    //
+    // std::exit(0);
+    // auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 0.)));
+    //
+    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(49, 0.)));
+    //
+    // std::cout << *qt << std::endl;
+
+    // Create tiles from 4K texture for virtual texturing
+
+    // LRUCache<std::size_t, dummy_string, 5> cache;
+    //
+    // cache.put(0, "0");
+    // cache.put(1, "1");
+    // cache.put(2, "2");
+    // cache.put(3, "3");
+    // cache.put(4, "4");
+    //
+    // std::cout << cache << std::endl;
+    //
+    // std::cout << cache.get(0) << std::endl;
+    // std::cout << cache.get(1) << std::endl;
+    //
+    // std::cout << cache << std::endl;
+    //
+    // std::cout << cache.get(4) << std::endl;
+    // std::cout << cache.get(1) << std::endl;
+    //
+    // std::cout << cache << std::endl;
     //
     // std::exit(0);
 

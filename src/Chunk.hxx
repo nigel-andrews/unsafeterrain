@@ -26,9 +26,9 @@ namespace OM3D
 
             // Insert degenerate 0-area triangle to break up strip.
             result.push_back(data[j * SIZE + (SIZE - 1)]);
+            result.push_back(data[j * SIZE + (SIZE - 1)]);
+            result.push_back(data[j * SIZE + (SIZE - 1)]);
             result.push_back(data[(j + 1) * SIZE]);
-            result.push_back(data[(j + 1) * SIZE]);
-            result.push_back(data[(j + 1) * SIZE + 1]);
         }
         return result;
     }

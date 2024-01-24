@@ -309,23 +309,6 @@ struct RendererState
     Framebuffer tone_map_framebuffer;
 };
 
-struct dummy_string
-{
-    std::string str;
-    std::size_t key;
-
-    dummy_string(const char* str)
-        : str(std::move(str))
-        , key(std::stoi(str))
-    {}
-
-    friend std::ostream& operator<<(std::ostream& os, const dummy_string& str)
-    {
-        os << str.str;
-        return os;
-    }
-};
-
 int main(int argc, char** argv)
 {
     // auto qt = std::make_unique<QTree<64>>(glm::vec2(0., 0.), 0);

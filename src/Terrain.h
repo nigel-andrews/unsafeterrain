@@ -3,6 +3,7 @@
 
 #include <cstddef>
 #include <map>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -25,23 +26,19 @@ namespace OM3D
                 static_cast<u32>(QTree<CHUNK_SIZE>::chunk_count),
                 glm::vec2(0., 0.), gen.generate({ 0, 0 }));
 
-            chunks_lut_ = new QTree<CHUNK_SIZE>(chunk.pos, chunk.id);
+            chunks_lut_ =
+                std::make_unique<QTree<CHUNK_SIZE>>(chunk.pos, chunk.id);
             chunks_.insert({ chunk.id, std::move(chunk) });
         }
 
-        ~Terrain()
-        {
-            delete chunks_lut_;
-        }
+        const Chunk<CHUNK_SIZE>& fetch(const glm::vec2& pos);
+        // void add(Chunk<CHUNK_SIZE>&& chunk);
 
-        const Chunk<CHUNK_SIZE>& fetch(const glm::vec2& pos) const;
-        void add(Chunk<CHUNK_SIZE>&& chunk);
-
-        void render() const;
+        void render(const glm::vec2 pos);
 
     private:
         // The quad tree gets the chunk id.
-        QTree<CHUNK_SIZE>* chunks_lut_;
+        std::unique_ptr<QTree<CHUNK_SIZE>> chunks_lut_;
         // The hashmap stores the corresponding chunk.
         std::unordered_map<u32, Chunk<CHUNK_SIZE>> chunks_;
     };

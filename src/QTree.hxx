@@ -7,6 +7,30 @@
 #include <utility>
 
 #include "QTree.h"
+#include "utils.h"
+
+namespace
+{
+    static enum direction get_dir(const glm::vec2& from, const glm::vec2& to)
+    {
+        if (to.x < from.x)
+        {
+            if (to.y < from.y)
+                return direction::bottom_left;
+            else
+                return direction::top_left;
+        }
+        else if (to.x > from.x)
+        {
+            if (to.y < from.y)
+                return direction::bottom_right;
+            else
+                return direction::top_right;
+        }
+        else
+            return direction::top_right;
+    }
+} // namespace
 
 namespace OM3D
 {
@@ -94,6 +118,9 @@ namespace OM3D
         if (!root)
             return std::move(root);
 
+        std::cout << "Adding chunk, new chunk count: "
+                  << QTree<CHUNK_SIZE>::chunk_count << std::endl;
+
         auto& node = root;
         std::optional<enum direction> dir = std::nullopt;
         while ((dir = node->is_in_bounds(pos)))
@@ -108,8 +135,39 @@ namespace OM3D
         return std::move(node);
     }
 
+    using FetchResult = RResult<std::size_t, std::size_t>;
     template <u32 CHUNK_SIZE>
-    auto QTree<CHUNK_SIZE>::is_in_bounds(const glm::vec2& pos)
+    auto QTree<CHUNK_SIZE>::fetch(const glm::vec2& pos) const -> FetchResult
+    {
+        if (this->is_in_bounds(pos) == std::nullopt)
+        {
+            if (this->height_ == 0)
+                return FetchResult::Ok(this->chunk_id_);
+
+            direction dir = get_dir(this->pos_, pos);
+
+            switch (dir)
+            {
+            case direction::top_left:
+                return this->top_left_ ? this->top_left_->fetch(pos)
+                                       : FetchResult::Err(0);
+            case direction::top_right:
+                return this->top_right_ ? this->top_right_->fetch(pos)
+                                        : FetchResult::Err(0);
+            case direction::bottom_left:
+                return this->bottom_left_ ? this->bottom_left_->fetch(pos)
+                                          : FetchResult::Err(0);
+            case direction::bottom_right:
+                return this->bottom_right_ ? this->bottom_right_->fetch(pos)
+                                           : FetchResult::Err(0);
+            }
+        }
+
+        return FetchResult::Err(1);
+    }
+
+    template <u32 CHUNK_SIZE>
+    auto QTree<CHUNK_SIZE>::is_in_bounds(const glm::vec2& pos) const
         -> std::optional<enum direction>
     {
         std::size_t bound = (std::pow(2, this->height_) * CHUNK_SIZE) / 2;

@@ -43,7 +43,7 @@ target_compile_options(
           "-std=c++23"
           "-pedantic"
           $<$<CONFIG:RELEASE>:-O3>
-          $<$<CONFIG:DEBUG>:-g>
+          $<$<CONFIG:DEBUG>:-g3>
           $<$<CONFIG:DEBUG>:-O0>
           $<$<CONFIG:DEBUG>:-fno-inline>
           $<$<CONFIG:DEBUG>:-fsanitize=address>)

@@ -45,7 +45,7 @@ namespace OM3D
         _sun_color = color;
     }
 
-    void Scene::render() const
+    void Scene::render()
     {
         // Fill and bind frame data buffer
         TypedBuffer<shader::FrameData> buffer(nullptr, 1);
@@ -78,7 +78,10 @@ namespace OM3D
             obj.render();
         }
 
-        _terrain.render();
+        // // Fetch chunk under camera
+        auto cam_pos = _camera.position();
+        // _terrain.fetch(glm::vec2(cam_pos.x, cam_pos.z));
+        _terrain.render(glm::vec2(cam_pos.x, cam_pos.z));
     }
 
 } // namespace OM3D

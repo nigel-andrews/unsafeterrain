@@ -4,9 +4,11 @@
 #include <array>
 #include <cstdint>
 #include <defines.h>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #define FWD(var) std::forward<decltype(var)>(var)
 #define HASH(str)                                                              \
@@ -104,6 +106,47 @@ namespace OM3D
     {
         bool is_ok;
         T value;
+    };
+
+    template <typename T, typename E>
+    struct [[nodiscard]] RResult
+    {
+        bool is_ok;
+        T value;
+        E error;
+
+        static RResult<T, E> Ok(T value)
+        {
+            return RResult<T, E>{
+                .is_ok = true,
+                .value = value,
+                .error = E{},
+            };
+        }
+
+        static RResult<T, E> Err(E value)
+        {
+            return RResult<T, E>{
+                .is_ok = false,
+                .value = T{},
+                .error = value,
+            };
+        }
+
+        inline constexpr T unwrap_or_else(std::function<T()> def)
+        {
+            return is_ok ? value : def();
+        }
+
+        inline constexpr operator bool() const
+        {
+            return is_ok;
+        }
+
+        inline constexpr bool operator!() const
+        {
+            return !is_ok;
+        }
     };
 
     template <>

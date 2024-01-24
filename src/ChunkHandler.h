@@ -32,7 +32,6 @@ namespace OM3D
         std::shared_ptr<Program> compute_program;
         std::shared_ptr<Program> render_program;
         GLuint vbos[2];
-        GLuint ssbos[2];
 
         GLint ssbo_target = 0;
     };

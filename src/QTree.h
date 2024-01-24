@@ -48,6 +48,14 @@ namespace OM3D
                              const glm::vec2& pos)
             -> std::unique_ptr<QTree<CHUNK_SIZE>>&&;
 
+        // Ok := chunk_id
+        //
+        // Err :=
+        //  | 0 = in bounds but not found
+        //  | 1 = out of bounds
+        auto fetch(const glm::vec2& pos) const
+            -> RResult<std::size_t, std::size_t>;
+
         template <size_t N>
         friend std::ostream& operator<<(std::ostream& os, const QTree<N>& qt);
 
@@ -64,7 +72,7 @@ namespace OM3D
             , height_(height)
         {}
 
-        std::optional<enum direction> is_in_bounds(const glm::vec2& pos);
+        std::optional<enum direction> is_in_bounds(const glm::vec2& pos) const;
         glm::vec2 compute_parent_pos(enum direction dir);
 
         static void add_node_aux(std::unique_ptr<QTree<CHUNK_SIZE>>& qt,

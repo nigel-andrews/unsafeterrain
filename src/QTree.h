@@ -58,6 +58,7 @@ namespace OM3D
 
         template <size_t N>
         friend std::ostream& operator<<(std::ostream& os, const QTree<N>& qt);
+        std::ostream& dump_dot(std::ostream& os) const;
 
         // Do not touch very dangerous onyo >w<
         static size_t chunk_count;
@@ -77,7 +78,6 @@ namespace OM3D
 
         static void add_node_aux(std::unique_ptr<QTree<CHUNK_SIZE>>& qt,
                                  const glm::vec2& pos);
-        std::ostream& dump_dot(std::ostream& os) const;
 
         // Only valid for leaf (height_ == 0) nodes.
         std::size_t chunk_id_;

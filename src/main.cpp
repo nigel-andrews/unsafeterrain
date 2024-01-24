@@ -311,15 +311,16 @@ struct RendererState
 
 int main(int argc, char** argv)
 {
-    // auto qt = std::make_unique<QTree<5>>(glm::vec2(0., 0.), 0);
-    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 7.)));
-    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(7., 0.)));
-    //
-    // qt = std::move(QTree<5>::add_node(qt, glm::vec2(49, 0.)));
-    //
-    // std::cout << *qt << std::endl;
-    //
-    // std::exit(0);
+    auto qt = std::make_unique<QTree<64>>(glm::vec2(0., 0.), 0);
+
+    qt = QTree<64>::add_node(qt, glm::vec2(7., 7.));
+    qt = QTree<64>::add_node(qt, glm::vec2(-70., 0.));
+
+    // qt = std::move(QTree<64>::add_node(qt, glm::vec2(49, 0.)));
+
+    std::cout << *qt << std::endl;
+
+    std::exit(0);
 
     // Terrain<5> terrain{};
     // std::array<GLfloat, 5 * 5> data{};

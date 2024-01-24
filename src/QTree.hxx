@@ -118,9 +118,9 @@ namespace OM3D
         if (!root)
             return std::move(root);
 
-        std::cout << "Adding chunk, new chunk count: "
-                  << QTree<CHUNK_SIZE>::chunk_count << std::endl;
-
+        // std::cout << "Adding chunk, new chunk count: "
+        //           << QTree<CHUNK_SIZE>::chunk_count << std::endl;
+        //
         auto& node = root;
         std::optional<enum direction> dir = std::nullopt;
         while ((dir = node->is_in_bounds(pos)))

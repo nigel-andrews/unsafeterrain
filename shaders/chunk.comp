@@ -257,9 +257,9 @@ void main() {
     index++;
 
   float x_off = offset.x + index % buffer_width;
-  float z_off = offset.x + index / buffer_width;
+  float z_off = offset.y + index / buffer_width;
 
-  float height = snoise(offset + vec2(index % buffer_width, index / buffer_width));
+  float height = snoise(offset + 0.1 * vec2(index % buffer_width, index / buffer_width));
 
   pos[index] = vec4(x_off, height, z_off, 1);
 }

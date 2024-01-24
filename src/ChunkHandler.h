@@ -8,14 +8,16 @@
 
 namespace OM3D
 {
+
     template <u32 CHUNK_SIZE = 64, u32 COMPUTE_SIZE = 1024>
     class ChunkHandler : NonCopyable
     {
+        using chunk_data_t = std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE>;
+
     public:
         static ChunkHandler<CHUNK_SIZE, COMPUTE_SIZE>& GetInstance();
 
-        auto generate(glm::ivec2 offset)
-            -> std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE>;
+        auto generate(glm::ivec2 offset) -> std::array<chunk_data_t, 2>;
 
         void render(const Chunk<CHUNK_SIZE>& chunk);
 
@@ -29,7 +31,8 @@ namespace OM3D
 
         std::shared_ptr<Program> compute_program;
         std::shared_ptr<Program> render_program;
-        GLuint vbo = 0;
+        GLuint vbos[2];
+
         GLint ssbo_target = 0;
     };
 } // namespace OM3D

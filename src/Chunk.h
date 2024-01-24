@@ -14,15 +14,18 @@ namespace OM3D
     {
         u32 id;
         glm::vec2 pos;
-        std::array<glm::vec4, SIZE * SIZE> data;
+        std::array<glm::vec4, SIZE * SIZE> vertices;
+        std::array<glm::vec4, SIZE * SIZE> normals;
 
-        Chunk(u32 id, glm::vec2 pos, std::array<glm::vec4, SIZE * SIZE> data)
+        Chunk(u32 id, glm::vec2 pos,
+              std::array<std::array<glm::vec4, SIZE * SIZE>, 2> data)
             : id(id)
             , pos(pos)
-            , data(std::move(data))
+            , vertices(std::move(data[0]))
+            , normals(std::move(data[1]))
         {}
 
-        std::vector<glm::vec4> triangulate() const;
+        std::array<std::vector<glm::vec4>, 2> triangulate() const;
     };
 } // namespace OM3D
 

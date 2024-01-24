@@ -77,6 +77,8 @@ namespace OM3D
         {
             obj.render();
         }
+
+        _terrain.render();
     }
 
 } // namespace OM3D

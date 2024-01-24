@@ -358,7 +358,6 @@ int main(int argc, char** argv)
     init_graphics();
 
     std::cout << "ooaOooOOoaAA" << std::endl;
-    Terrain<32> terrain;
 
     ImGuiRenderer imgui(window);
 

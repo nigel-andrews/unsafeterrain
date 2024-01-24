@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Chunk.h"
 #include "Program.h"
 #include "utils.h"
 
@@ -15,6 +16,8 @@ namespace OM3D
 
         auto generate(glm::ivec2 offset)
             -> std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE>;
+
+        void render(const Chunk<CHUNK_SIZE>& chunk);
 
     private:
         ChunkHandler();

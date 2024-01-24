@@ -42,7 +42,7 @@ target_compile_options(
           "-Wextra"
           "-std=c++23"
           "-pedantic"
-          $<$<CONFIG:RELEASE>:-Werror>
+          # $<$<CONFIG:RELEASE>:-Werror>
           $<$<CONFIG:RELEASE>:-O3>
           $<$<CONFIG:DEBUG>:-g>
           $<$<CONFIG:DEBUG>:-O0>
@@ -50,4 +50,4 @@ target_compile_options(
           $<$<CONFIG:DEBUG>:-fsanitize=address>)
 
 set_target_properties(main PROPERTIES CXX_EXTENSIONS OFF CXX_STANDARD 20)
-target_link_libraries(main PRIVATE glfw asan)
+target_link_libraries(main PRIVATE glfw $<$<CONFIG:DEBUG>:asan>)

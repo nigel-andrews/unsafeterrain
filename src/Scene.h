@@ -7,6 +7,8 @@
 #include <memory>
 #include <vector>
 
+#include "Terrain.h"
+
 namespace OM3D
 {
 
@@ -39,6 +41,7 @@ namespace OM3D
         glm::vec3 _sun_color = glm::vec3(1.0f);
 
         Camera _camera;
+        Terrain<64> _terrain;
     };
 
 } // namespace OM3D

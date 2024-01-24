@@ -2,6 +2,7 @@
 
 #include <iostream>
 
+#include "ChunkHandler.h"
 #include "Terrain.h"
 
 namespace OM3D
@@ -27,5 +28,13 @@ namespace OM3D
     inline void Terrain<CHUNK_SIZE>::add(Chunk<CHUNK_SIZE>&& chunk)
     {
         // chunks.emplace_back(chunk);
+    }
+
+    template <u32 CHUNK_SIZE>
+    inline void Terrain<CHUNK_SIZE>::render() const
+    {
+        auto& handler = ChunkHandler<CHUNK_SIZE>::GetInstance();
+        for (const auto& [_, chunk] : chunks_)
+            handler.render(chunk);
     }
 } // namespace OM3D

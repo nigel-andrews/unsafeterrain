@@ -21,13 +21,12 @@ namespace OM3D
         Terrain()
         {
             auto& gen = ChunkHandler<CHUNK_SIZE>::GetInstance();
-            Chunk<32> chunk{
+            Chunk<CHUNK_SIZE> chunk(
                 static_cast<u32>(QTree<CHUNK_SIZE>::chunk_count),
-                glm::vec2(0., 0.),
-                gen.generate({ 0, 0 }),
-            };
+                glm::vec2(0., 0.), gen.generate({ 0, 0 }));
 
             chunks_lut_ = new QTree<CHUNK_SIZE>(chunk.pos, chunk.id);
+            chunks_.insert({ chunk.id, std::move(chunk) });
         }
 
         ~Terrain()
@@ -37,6 +36,8 @@ namespace OM3D
 
         const Chunk<CHUNK_SIZE>& fetch(const glm::vec2& pos) const;
         void add(Chunk<CHUNK_SIZE>&& chunk);
+
+        void render() const;
 
     private:
         // The quad tree gets the chunk id.

@@ -256,5 +256,5 @@ void main() {
   if (index != 0)
     index++;
 
-  pos[index] = vec4(0, snoise(offset + vec2(index % buffer_width, index / buffer_width)), 0, 0);
+  pos[index] = vec4(offset.x + index / buffer_width, snoise(offset + vec2(index % buffer_width, index / buffer_width)), offset.y + index % buffer_width, 1);
 }

@@ -60,16 +60,35 @@ namespace OM3D
         memcpy(vertices_read.data(), pSSBOData,
                CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4));
 
-        // // Debug: print SSBO
-        // for (u32 i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++)
-        // {
-        //     std::cout << vertices_read[i].x << ", " << vertices_read[i].y
-        //               << ", " << vertices_read[i].z << ", "
-        //               << vertices_read[i].w << std::endl;
-        // }
-
         DOGL(glUnmapBuffer(GL_SHADER_STORAGE_BUFFER));
 
         return vertices_read;
+    }
+
+    template <u32 CHUNK_SIZE, u32 COMPUTE_SIZE>
+    void ChunkHandler<CHUNK_SIZE, COMPUTE_SIZE>::render(
+        const Chunk<CHUNK_SIZE>& chunk)
+    {
+        render_program->bind();
+
+        GLvoid* pSSBOData;
+        DOGL(pSSBOData = glMapNamedBuffer(vbo, GL_WRITE_ONLY));
+
+        auto tris = chunk.triangulate();
+
+        memcpy(pSSBOData, tris.data(),
+               CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4));
+
+        DOGL(glUnmapNamedBuffer(vbo));
+
+        DOGL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
+
+        GLint pos_loc = render_program->find_attrib("position");
+        assert(pos_loc != -1);
+
+        DOGL(glVertexAttribPointer(pos_loc, 4, GL_FLOAT, GL_FALSE, 0, nullptr));
+        DOGL(glEnableVertexAttribArray(pos_loc));
+
+        DOGL(glDrawArrays(GL_TRIANGLE_STRIP, 0, CHUNK_SIZE * CHUNK_SIZE));
     }
 } // namespace OM3D

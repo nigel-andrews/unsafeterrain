@@ -1,10 +1,13 @@
 #version 450
 
+#include "utils.glsl"
+
 in vec4 position;
 
-layout(location = 0) uniform uint buffer_width;
-layout(location = 1) uniform ivec2 offset;
+layout(binding = 0) uniform Data {
+    FrameData frame;
+};
 
 void main() {
-  gl_Position = position;
+  gl_Position = frame.camera.view_proj * position;
 }

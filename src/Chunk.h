@@ -22,29 +22,8 @@ namespace OM3D
             , data(std::move(data))
         {}
 
-        std::vector<glm::vec4> triangulate() const
-        {
-            std::vector<glm::vec4> result;
-            for (u32 j = 0; j < SIZE - 1; j++)
-            {
-                /*
-                    ----->
-                    . . . .
-                    | | | |
-                    . . . .
-                */
-                for (u32 i = 0; i < SIZE; i++)
-                {
-                    u32 index = j * SIZE + i;
-                    result.push_back(data[index]);
-                    result.push_back(data[index + SIZE]);
-                }
-
-                // Insert degenerate 0-area triangle to break up strip.
-                result.push_back(data[(j + 1) * SIZE]);
-                result.push_back(data[(j + 1) * SIZE]);
-            }
-            return result;
-        }
+        std::vector<glm::vec4> triangulate() const;
     };
 } // namespace OM3D
+
+#include "Chunk.hxx"

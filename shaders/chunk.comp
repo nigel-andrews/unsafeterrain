@@ -242,10 +242,10 @@ vec3 snoise3( vec4 x ){
     return vec3( s , s1 , s2 );
 }
 
-layout (local_size_x = 1024) in;
+layout (local_size_x = COMPUTE_SIZE) in;
 
-layout (std430, binding = 0) buffer point_pos_buffer {
-  float height[];
+layout (std430, binding = 0) buffer point_pos_ssbo {
+    vec4 pos[];
 };
 
 layout (location = 0) uniform uint buffer_width;
@@ -256,5 +256,5 @@ void main() {
   if (index != 0)
     index++;
 
-  height[index] = snoise(offset + vec2(index % buffer_width, index / buffer_width));
+  pos[index] = vec4(0, snoise(offset + vec2(index % buffer_width, index / buffer_width)), 0, 0);
 }

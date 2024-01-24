@@ -50,6 +50,8 @@ namespace OM3D
         FATAL("Unknown usage value");
     }
 
+    static GLuint global_vao = 0;
+
     u32 access_type_to_gl(AccessType access)
     {
         switch (access)
@@ -75,8 +77,6 @@ namespace OM3D
         }
         return val;
     }
-
-    static GLuint global_vao = 0;
 
     void init_graphics()
     {

@@ -71,6 +71,11 @@ namespace OM3D
             set_uniform(str_hash(name), value);
         }
 
+        u32 get_handle() const
+        {
+            return _handle.get();
+        }
+
     private:
         void fetch_uniform_locations();
         int find_location(u32 hash);

@@ -25,6 +25,11 @@ namespace OM3D
         BufferMapping<byte>
         map_bytes(AccessType access = AccessType::ReadWrite);
 
+        u32 get_handle() const
+        {
+            return this->_handle.get();
+        }
+
     protected:
         void* map_internal(AccessType access);
         const GLHandle& handle() const;

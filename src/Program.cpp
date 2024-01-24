@@ -80,7 +80,6 @@ namespace OM3D
                     if (!line.empty())
                     {
                         const char delim = line.front();
-                        // TODO: parse <>
                         const auto end = line.find(delim, 1);
                         if (end != line.size() - 1 || delim != '"')
                         {

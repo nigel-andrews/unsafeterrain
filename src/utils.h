@@ -48,8 +48,11 @@
         EXPR;                                                                  \
         GLenum err = glGetError();                                             \
         if (err != GL_NO_ERROR)                                                \
-            std::cerr << "[OpenGL][ERROR] " << __FILE__ << ':' << __LINE__     \
-                      << ": " << err << std::endl;                             \
+        {                                                                      \
+            std::cerr << "[GL][ERROR] " << __FILE__ << ':' << __LINE__         \
+                      << std::endl;                                            \
+            std::exit(1);                                                      \
+        }                                                                      \
     } while (0)
 
 namespace OM3D

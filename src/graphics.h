@@ -1,6 +1,7 @@
 #ifndef GRAPHICS_H
 #define GRAPHICS_H
 
+#include <glad/glad.h>
 #include <string_view>
 #include <utils.h>
 

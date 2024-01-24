@@ -5,8 +5,6 @@
 #include <memory>
 #include <utility>
 
-#include "ChunkGenerator.h"
-
 #define GLFW_INCLUDE_NONE
 #include <Framebuffer.h>
 #include <GLFW/glfw3.h>
@@ -19,8 +17,9 @@
 #include <iostream>
 #include <vector>
 
+#include "ChunkHandler.h"
 #include "QTree.h"
-// #include "Terrain.h"
+#include "Terrain.h"
 
 using namespace OM3D;
 
@@ -358,17 +357,14 @@ int main(int argc, char** argv)
     glfwSwapInterval(1); // Enable vsync
     init_graphics();
 
-    ChunkGenerator<32> gen{};
-    gen.generate({ 0, 0 });
-
-    std::exit(1);
+    std::cout << "ooaOooOOoaAA" << std::endl;
+    Terrain<32> terrain;
 
     ImGuiRenderer imgui(window);
 
     scene = create_default_scene();
 
     auto tonemap_program = Program::from_files("tonemap.frag", "screen.vert");
-    auto generator_program = Program::from_file("generate.comp");
     RendererState renderer;
 
     for (;;)

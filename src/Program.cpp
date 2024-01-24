@@ -157,6 +157,45 @@ namespace OM3D
         }
     }
 
+    Program::Program(const Program::ShaderConfig& config)
+        : _handle(glCreateProgram())
+    {
+        const GLuint vert_handle = create_shader(config.vert, GL_VERTEX_SHADER);
+        const GLuint tcs_handle = config.tcs
+            ? create_shader(config.tcs.value(), GL_TESS_CONTROL_SHADER)
+            : 0;
+        const GLuint tes_handle = config.tes
+            ? create_shader(config.tes.value(), GL_TESS_EVALUATION_SHADER)
+            : 0;
+        const GLuint geom_handle = config.geom
+            ? create_shader(config.geom.value(), GL_GEOMETRY_SHADER)
+            : 0;
+        const GLuint frag_handle =
+            create_shader(config.frag, GL_FRAGMENT_SHADER);
+
+        glAttachShader(_handle.get(), vert_handle);
+        if (tcs_handle)
+            glAttachShader(_handle.get(), tcs_handle);
+        if (tes_handle)
+            glAttachShader(_handle.get(), tes_handle);
+        if (geom_handle)
+            glAttachShader(_handle.get(), geom_handle);
+        glAttachShader(_handle.get(), frag_handle);
+
+        link_program(_handle.get());
+
+        glDeleteShader(vert_handle);
+        if (tcs_handle)
+            glDeleteShader(tcs_handle);
+        if (tes_handle)
+            glDeleteShader(tes_handle);
+        if (geom_handle)
+            glDeleteShader(geom_handle);
+        glDeleteShader(frag_handle);
+
+        fetch_uniform_locations();
+    }
+
     Program::Program(const std::string& frag, const std::string& vert)
         : _handle(glCreateProgram())
     {
@@ -273,6 +312,43 @@ namespace OM3D
         {
             program = std::make_shared<Program>(read_shader(frag, defines),
                                                 read_shader(vert, defines));
+            weak_program = program;
+        }
+        return program;
+    }
+
+    std::shared_ptr<Program>
+    Program::from_config(const ShaderConfig& config,
+                         Span<const std::string> defines)
+    {
+        static std::unordered_map<std::vector<std::string>,
+                                  std::weak_ptr<Program>,
+                                  CollectionHasher<std::vector<std::string>>>
+            loaded;
+
+        std::vector<std::string> key(defines.begin(), defines.end());
+        key.emplace_back(config.frag);
+        if (config.tcs)
+            key.emplace_back(config.tcs.value());
+        if (config.tes)
+            key.emplace_back(config.tes.value());
+        if (config.geom)
+            key.emplace_back(config.geom.value());
+        key.emplace_back(config.vert);
+
+        auto& weak_program = loaded[key];
+        auto program = weak_program.lock();
+        if (!program)
+        {
+            auto read = [](std::string s) { return read_shader(s); };
+
+            program = std::make_shared<Program>(ShaderConfig{
+                .vert = read_shader(config.vert, defines),
+                .tcs = config.tcs.transform(read),
+                .tes = config.tes.transform(read),
+                .geom = config.geom.transform(read),
+                .frag = read_shader(config.frag, defines),
+            });
             weak_program = program;
         }
         return program;

@@ -25,7 +25,7 @@ namespace OM3D
         std::vector<glm::vec4> triangulate() const
         {
             std::vector<glm::vec4> result;
-            for (u32 j = 0; j < SIZE - 1; j += 2)
+            for (u32 j = 0; j < SIZE - 1; j++)
             {
                 /*
                     ----->
@@ -40,18 +40,9 @@ namespace OM3D
                     result.push_back(data[index + SIZE]);
                 }
 
-                /*
-                    <-----
-                    . . . .
-                     \ \ \
-                    . . . .
-                */
-                for (u32 i = SIZE - 1; i < SIZE; i--)
-                {
-                    u32 index = (j + 1) * SIZE + i;
-                    result.push_back(data[index + SIZE]);
-                    result.push_back(data[index - 1]);
-                }
+                // Insert degenerate 0-area triangle to break up strip.
+                result.push_back(data[(j + 1) * SIZE]);
+                result.push_back(data[(j + 1) * SIZE]);
             }
             return result;
         }

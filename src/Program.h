@@ -10,6 +10,7 @@
 #include <glm/vec4.hpp>
 #include <graphics.h>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace OM3D
@@ -34,10 +35,20 @@ namespace OM3D
         };
 
     public:
+        struct ShaderConfig
+        {
+            std::string vert;
+            std::optional<std::string> tcs;
+            std::optional<std::string> tes;
+            std::optional<std::string> geom;
+            std::string frag;
+        };
+
         Program() = default;
         Program(Program&&) = default;
         Program& operator=(Program&&) = default;
 
+        Program(const ShaderConfig& config);
         Program(const std::string& frag, const std::string& vert);
         Program(const std::string& comp);
         ~Program();
@@ -49,9 +60,14 @@ namespace OM3D
         static std::shared_ptr<Program>
         from_file(const std::string& comp,
                   Span<const std::string> defines = {});
+
         static std::shared_ptr<Program>
         from_files(const std::string& frag, const std::string& vert,
                    Span<const std::string> defines = {});
+
+        static std::shared_ptr<Program>
+        from_config(const ShaderConfig& config,
+                    Span<const std::string> defines = {});
 
         void set_uniform(u32 name_hash, u32 value);
         void set_uniform(u32 name_hash, float value);

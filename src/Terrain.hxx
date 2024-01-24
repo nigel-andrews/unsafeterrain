@@ -33,6 +33,7 @@ namespace OM3D
     template <u32 CHUNK_SIZE>
     inline void Terrain<CHUNK_SIZE>::render() const
     {
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         auto& handler = ChunkHandler<CHUNK_SIZE>::GetInstance();
         for (const auto& [_, chunk] : chunks_)
             handler.render(chunk);

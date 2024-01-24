@@ -14,13 +14,11 @@ namespace OM3D
     {
         auto fetched = this->chunks_lut_->fetch(pos);
         auto chunk_id = fetched.unwrap_or_else([&, this]() -> u32 {
-            std::cout << "Generating chunk at (" << pos.x << ", " << pos.y
-                      << ")\n";
-
             this->chunks_lut_ =
                 QTree<CHUNK_SIZE>::add_node(this->chunks_lut_, pos);
 
             auto chunk_id = this->chunks_lut_->chunk_count - 1;
+            assert(chunk_id < this->chunks_lut_->chunk_count);
 
             ChunkHandler<CHUNK_SIZE>& handler =
                 ChunkHandler<CHUNK_SIZE>::GetInstance();
@@ -50,9 +48,9 @@ namespace OM3D
         // glm::ivec2 aligned_pos =
         //     i32(CHUNK_SIZE) * glm::ivec2(pos / float(CHUNK_SIZE));
         auto& handler = ChunkHandler<CHUNK_SIZE>::GetInstance();
-        for (float i = -2; i < 2; i++)
+        for (float i = -3; i < 3; i++)
         {
-            for (float j = -2; j < 2; j++)
+            for (float j = -3; j < 3; j++)
             {
                 auto& chunk = this->fetch(
                     pos + glm::vec2(i * CHUNK_SIZE, j * CHUNK_SIZE));

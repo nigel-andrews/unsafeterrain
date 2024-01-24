@@ -28,11 +28,11 @@ namespace OM3D
 
         auto push = [&](const glm::vec4& vertex) {
             result.push_back(vertex);
-            auto res_size = result.size();
+            size_t res_size = result.size();
 
-            const auto& a = result[res_size - 1];
-            const auto& b = result[res_size - 2];
-            const auto& c = result[res_size - 3];
+            const glm::vec4& a = result[res_size - 1];
+            const glm::vec4& b = result[res_size - 2];
+            const glm::vec4& c = result[res_size - 3];
 
             normals.push_back(compute_normal(a, b, c, result.size() % 2 == 0));
         };

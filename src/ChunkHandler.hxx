@@ -27,6 +27,9 @@ namespace OM3D
 
         glGenBuffers(2, vbos);
 
+        // + CHUNK_SIZE * 4 for the triangle strip breaks
+        auto data_shape =
+            2 * (CHUNK_SIZE * CHUNK_SIZE + CHUNK_SIZE * 4) * sizeof(glm::vec4);
         {
             auto vbo = vbos[0];
 
@@ -38,10 +41,7 @@ namespace OM3D
             glVertexAttribPointer(pos_loc, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
             glEnableVertexAttribArray(pos_loc);
 
-            std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE> vertices;
-            glBufferData(GL_ARRAY_BUFFER,
-                         CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4),
-                         vertices.data(), GL_STREAM_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, data_shape, nullptr, GL_STREAM_DRAW);
 
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo_target, vbo);
         }
@@ -57,11 +57,7 @@ namespace OM3D
             glVertexAttribPointer(norm_loc, 4, GL_FLOAT, GL_FALSE, 0, nullptr);
             glEnableVertexAttribArray(norm_loc);
 
-            std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE> normals;
-
-            glBufferData(GL_ARRAY_BUFFER,
-                         CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4),
-                         normals.data(), GL_STREAM_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, data_shape, nullptr, GL_STREAM_DRAW);
 
             glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo_target + 1, nvbo);
         }
@@ -118,8 +114,7 @@ namespace OM3D
             GLvoid* pSSBOData;
             DOGL(pSSBOData = glMapNamedBuffer(vbo, GL_WRITE_ONLY));
 
-            memcpy(pSSBOData, tris.data(),
-                   CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4));
+            memcpy(pSSBOData, tris.data(), tris.size() * sizeof(glm::vec4));
 
             DOGL(glUnmapNamedBuffer(vbo));
 
@@ -138,7 +133,7 @@ namespace OM3D
             DOGL(nSSBOData = glMapNamedBuffer(nvbo, GL_WRITE_ONLY));
 
             memcpy(nSSBOData, tri_norms.data(),
-                   CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4));
+                   tri_norms.size() * sizeof(glm::vec4));
 
             DOGL(glUnmapNamedBuffer(nvbo));
 
@@ -152,6 +147,7 @@ namespace OM3D
             DOGL(glEnableVertexAttribArray(norm_loc));
         }
 
-        DOGL(glDrawArrays(GL_TRIANGLE_STRIP, 0, CHUNK_SIZE * CHUNK_SIZE));
+        DOGL(glDrawArrays(GL_TRIANGLE_STRIP, 0,
+                          2 * (CHUNK_SIZE * CHUNK_SIZE + CHUNK_SIZE * 4)));
     }
 } // namespace OM3D

@@ -394,8 +394,8 @@ int main(int argc, char** argv)
             process_inputs(window, scene->camera());
         }
 
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+        // glEnable(GL_CULL_FACE);
+        // glCullFace(GL_BACK);
         glFrontFace(GL_CCW);
         // Render the scene
         {

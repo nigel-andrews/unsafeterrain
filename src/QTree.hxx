@@ -33,30 +33,6 @@ namespace OM3D
         std::unreachable();
     }
 
-    namespace
-    {
-        static enum direction get_dir(const glm::vec2& from,
-                                      const glm::vec2& to)
-        {
-            if (to.x < from.x)
-            {
-                if (to.y < from.y)
-                    return direction::bottom_left;
-                else
-                    return direction::top_left;
-            }
-            else if (to.x > from.x)
-            {
-                if (to.y < from.y)
-                    return direction::bottom_right;
-                else
-                    return direction::top_right;
-            }
-            else
-                return direction::top_right;
-        }
-    } // namespace
-
 #define RECURSE_QTREE(Target, Offset)                                          \
     if (!Target)                                                               \
         Target = std::unique_ptr<QTree<CHUNK_SIZE>>(new QTree<CHUNK_SIZE>(     \
@@ -162,31 +138,6 @@ namespace OM3D
                 return std::nullopt;
         }
     }
-
-    namespace
-    {
-        std::ostream& operator<<(std::ostream& os, const glm::vec2& v)
-        {
-            return os << "vec2(" << v.x << ", " << v.y << ")";
-        }
-
-        std::ostream& operator<<(std::ostream& os, const direction dir)
-        {
-            switch (dir)
-            {
-            case direction::top_left:
-                return os << "top_left";
-            case direction::top_right:
-                return os << "top_right";
-            case direction::bottom_left:
-                return os << "bottom_left";
-            case direction::bottom_right:
-                return os << "bottom_right";
-            }
-
-            std::unreachable();
-        }
-    } // namespace
 
 #define PRINT_QTREE(Child)                                                     \
     if (Child)                                                                 \

@@ -42,7 +42,6 @@ target_compile_options(
           "-Wextra"
           "-std=c++23"
           "-pedantic"
-          # $<$<CONFIG:RELEASE>:-Werror>
           $<$<CONFIG:RELEASE>:-O3>
           $<$<CONFIG:DEBUG>:-g>
           $<$<CONFIG:DEBUG>:-O0>

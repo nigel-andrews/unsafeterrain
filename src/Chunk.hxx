@@ -47,7 +47,6 @@ namespace OM3D
                 | | | |
                 . . . .
             */
-
             for (u32 i = j ? 0 : 2; i < SIZE; i++)
             {
                 u32 index = j * SIZE + i;
@@ -56,7 +55,7 @@ namespace OM3D
                     result.push_back(vertices[index]);
                     auto normal =
                         compute_normal(result[index - 1], result[index - 2],
-                                       result[index], false);
+                                       result[index], true);
                     normals.push_back(normal);
                     normals.push_back(normal);
                     normals.push_back(normal);

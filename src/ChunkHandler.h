@@ -13,11 +13,16 @@ namespace OM3D
     class ChunkHandler : NonCopyable
     {
         using chunk_data_t = std::array<glm::vec4, CHUNK_SIZE * CHUNK_SIZE>;
+        using triangulated_data_t =
+            std::array<glm::vec4, Chunk<CHUNK_SIZE>::TRIANGULATED_COUNT>;
 
     public:
         static ChunkHandler<CHUNK_SIZE, COMPUTE_SIZE>& GetInstance();
 
-        auto generate(glm::ivec2 offset) -> std::array<chunk_data_t, 2>;
+        auto generate(glm::ivec2 offset) -> std::array<triangulated_data_t, 2>;
+
+        auto triangulate(chunk_data_t chunk_vertices)
+            -> std::array<triangulated_data_t, 2>;
 
         void render(const Chunk<CHUNK_SIZE>& chunk);
 

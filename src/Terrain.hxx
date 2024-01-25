@@ -48,6 +48,8 @@ namespace OM3D
         // glm::ivec2 aligned_pos =
         //     i32(CHUNK_SIZE) * glm::ivec2(pos / float(CHUNK_SIZE));
         auto& handler = ChunkHandler<CHUNK_SIZE>::GetInstance();
+        // auto& chunk = this->fetch(pos);
+        // handler.render(chunk);
         for (float i = -3; i < 3; i++)
         {
             for (float j = -3; j < 3; j++)

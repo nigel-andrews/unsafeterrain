@@ -1,11 +1,12 @@
 #pragma once
 
 #include <array>
-#include <cstddef>
 #include <cstring>
 #include <format>
+#include <glm/geometric.hpp>
 
 #include "ChunkHandler.h"
+
 namespace OM3D
 {
 
@@ -27,9 +28,8 @@ namespace OM3D
 
         glGenBuffers(2, vbos);
 
-        // + CHUNK_SIZE * 4 for the triangle strip breaks
         auto data_shape =
-            2 * (CHUNK_SIZE * CHUNK_SIZE + CHUNK_SIZE * 4) * sizeof(glm::vec4);
+            Chunk<CHUNK_SIZE>::TRIANGULATED_COUNT * sizeof(glm::vec4);
         {
             auto vbo = vbos[0];
 
@@ -59,13 +59,85 @@ namespace OM3D
 
             glBufferData(GL_ARRAY_BUFFER, data_shape, nullptr, GL_STREAM_DRAW);
 
-            glBindBufferBase(GL_SHADER_STORAGE_BUFFER, ssbo_target + 1, nvbo);
+            // No need to bind normals vbo as ssbo since the compute shader
+            // doesn't write to it.
         }
     }
 
     template <u32 CHUNK_SIZE, u32 COMPUTE_SIZE>
+    auto ChunkHandler<CHUNK_SIZE, COMPUTE_SIZE>::triangulate(
+        chunk_data_t chunk_vertices) -> std::array<triangulated_data_t, 2>
+    {
+        triangulated_data_t vertices;
+        triangulated_data_t normals;
+
+        // std::cout << vertices.size() << " / " << chunk_vertices.size() <<
+        // '\n'; std::cout << 6 * chunk_vertices.size() << '\n';
+
+        // Create triangles from the chunk vertices.
+        for (u32 i = 0; i < CHUNK_SIZE - 1; i++)
+        {
+            for (u32 j = 0; j < CHUNK_SIZE - 1; j++)
+            {
+                u32 index = i * CHUNK_SIZE + j;
+
+                // std::cout << i << " " << j << " " << index << ' ' << 6 *
+                // index
+                //           << '/' << Chunk<CHUNK_SIZE>::TRIANGULATED_COUNT
+                //           << '\n';
+
+                // 0 2
+                // 1
+                vertices[6 * index] = chunk_vertices[index];
+                vertices[6 * index + 1] = chunk_vertices[index + CHUNK_SIZE];
+                vertices[6 * index + 2] = chunk_vertices[index + 1];
+
+                //   3
+                // 4 5
+                vertices[6 * index + 3] = chunk_vertices[index + 1];
+                vertices[6 * index + 4] = chunk_vertices[index + CHUNK_SIZE];
+                vertices[6 * index + 5] =
+                    chunk_vertices[index + CHUNK_SIZE + 1];
+            }
+        }
+
+        auto compute_normal = [](const glm::vec4& a, const glm::vec4& b,
+                                 const glm::vec4& c, bool even) -> glm::vec4 {
+            auto norm = glm::vec4(
+                glm::normalize(glm::cross(glm::vec3(b - a), glm::vec3(c - a))),
+                1.0f);
+            return even ? norm : norm;
+        };
+
+        // Compute face normals from the triangles.
+        for (u32 i = 0; i < CHUNK_SIZE - 1; i++)
+        {
+            for (u32 j = 0; j < CHUNK_SIZE - 1; j++)
+            {
+                u32 index = 6 * (i * CHUNK_SIZE + j);
+
+                glm::vec4 normal =
+                    compute_normal(vertices[index], vertices[index + 1],
+                                   vertices[index + 2], true);
+                normals[index] = normal;
+                normals[index + 1] = normal;
+                normals[index + 2] = normal;
+
+                normal =
+                    compute_normal(vertices[index + 3], vertices[index + 4],
+                                   vertices[index + 5], false);
+                normals[index + 3] = normal;
+                normals[index + 4] = normal;
+                normals[index + 5] = normal;
+            }
+        }
+
+        return { vertices, normals };
+    }
+
+    template <u32 CHUNK_SIZE, u32 COMPUTE_SIZE>
     auto ChunkHandler<CHUNK_SIZE, COMPUTE_SIZE>::generate(glm::ivec2 offset)
-        -> std::array<chunk_data_t, 2>
+        -> std::array<triangulated_data_t, 2>
     {
         compute_program->bind();
 
@@ -75,8 +147,6 @@ namespace OM3D
         DOGL(glDispatchCompute((CHUNK_SIZE * CHUNK_SIZE) / COMPUTE_SIZE, 1, 1));
 
         chunk_data_t vertices_read;
-        chunk_data_t normals_read;
-
         {
             auto vbo = vbos[0];
             GLvoid* pSSBOData;
@@ -87,18 +157,9 @@ namespace OM3D
             DOGL(glUnmapNamedBuffer(vbo));
         }
 
-        {
-            auto nvbo = vbos[1];
-            GLvoid* nSSBOData;
-            DOGL(nSSBOData = glMapNamedBuffer(nvbo, GL_READ_ONLY));
-
-            memcpy(normals_read.data(), nSSBOData,
-                   CHUNK_SIZE * CHUNK_SIZE * sizeof(glm::vec4));
-
-            DOGL(glUnmapNamedBuffer(nvbo));
-        }
-
-        return { vertices_read, normals_read };
+        // No need to read normals from OpenGL since we don't set them in the
+        // compute shader and overwrite them when triangulating.
+        return triangulate(vertices_read);
     }
 
     template <u32 CHUNK_SIZE, u32 COMPUTE_SIZE>
@@ -107,15 +168,15 @@ namespace OM3D
     {
         render_program->bind();
 
-        const auto& [tris, tri_norms] = chunk.triangulate();
-
+        // Vertices
         {
             auto vbo = vbos[0];
+
+            // Write data to VBO/SSBO
             GLvoid* pSSBOData;
             DOGL(pSSBOData = glMapNamedBuffer(vbo, GL_WRITE_ONLY));
-
-            memcpy(pSSBOData, tris.data(), tris.size() * sizeof(glm::vec4));
-
+            memcpy(pSSBOData, chunk.vertices.data(),
+                   chunk.vertices.size() * sizeof(glm::vec4));
             DOGL(glUnmapNamedBuffer(vbo));
 
             DOGL(glBindBuffer(GL_ARRAY_BUFFER, vbo));
@@ -127,13 +188,15 @@ namespace OM3D
                                        nullptr));
             DOGL(glEnableVertexAttribArray(pos_loc));
         }
+
+        // Normals
         {
             auto nvbo = vbos[1];
             GLvoid* nSSBOData;
             DOGL(nSSBOData = glMapNamedBuffer(nvbo, GL_WRITE_ONLY));
 
-            memcpy(nSSBOData, tri_norms.data(),
-                   tri_norms.size() * sizeof(glm::vec4));
+            memcpy(nSSBOData, chunk.normals.data(),
+                   chunk.normals.size() * sizeof(glm::vec4));
 
             DOGL(glUnmapNamedBuffer(nvbo));
 
@@ -147,7 +210,7 @@ namespace OM3D
             DOGL(glEnableVertexAttribArray(norm_loc));
         }
 
-        DOGL(glDrawArrays(GL_TRIANGLE_STRIP, 0,
-                          2 * (CHUNK_SIZE * CHUNK_SIZE + CHUNK_SIZE * 4)));
+        DOGL(glDrawArrays(GL_TRIANGLES, 0,
+                          Chunk<CHUNK_SIZE>::TRIANGULATED_COUNT));
     }
 } // namespace OM3D
